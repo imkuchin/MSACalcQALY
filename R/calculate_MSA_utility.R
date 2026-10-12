@@ -232,10 +232,20 @@ calculate_MSA_utility <- function(
     }
   }
 
-  # Get draws for exact match
-  draws <- pred_grid$.epred[pred_grid$sex == sex &
-                              pred_grid$age == age &
-                              pred_grid$UMSARS_IV == stage_code]
+    # Get draws; "Other" = 50% Male + 50% Female
+  if (sex == "Other") {
+    draws_m <- pred_grid$.epred[pred_grid$sex == "Male" &
+                                  pred_grid$age == age &
+                                  pred_grid$UMSARS_IV == stage_code]
+    draws_f <- pred_grid$.epred[pred_grid$sex == "Female" &
+                                  pred_grid$age == age &
+                                  pred_grid$UMSARS_IV == stage_code]
+    draws <- 0.5 * draws_m + 0.5 * draws_f
+  } else {
+    draws <- pred_grid$.epred[pred_grid$sex == sex &
+                                pred_grid$age == age &
+                                pred_grid$UMSARS_IV == stage_code]
+  }
 
   if (length(draws) == 0) {
     stop("No predictions found for this combination. Check age (40-100), sex (Male/Female/Other), and stage.")
